@@ -2,6 +2,8 @@ require "spec_helper"
 
 describe CanCan::ControllerResource do
   before(:each) do
+    Project.delete_all
+    Category.delete_all
     @params = HashWithIndifferentAccess.new(:controller => "projects")
     @controller_class = Class.new
     @controller = @controller_class.new
@@ -124,6 +126,9 @@ describe CanCan::ControllerResource do
   end
 
   it "should not build a collection when on index action when class does not respond to accessible_by" do
+    class CustomModel
+    end
+    @params[:controller] = "custom_models"
     @params[:action] = "index"
     resource = CanCan::ControllerResource.new(@controller)
     resource.load_resource
