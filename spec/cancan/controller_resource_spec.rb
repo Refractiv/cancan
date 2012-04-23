@@ -87,8 +87,11 @@ describe CanCan::ControllerResource do
   end
 
   it "should build a new resource for namespaced model with hash if params[:id] is not specified" do
-    @params.merge!(:action => "create", 'sub_project' => {:name => "foobar"})
-    resource = CanCan::ControllerResource.new(@controller, :class => ::Sub::Project)
+    module SomeEngine
+      class Project < ::Project; end
+    end
+    @params.merge!(:action => "create", 'some_engine_project' => {:name => "foobar"})
+    resource = CanCan::ControllerResource.new(@controller, :class => SomeEngine::Project)
     resource.load_resource
     expect(@controller.instance_variable_get(:@project).name).to eq("foobar")
   end
@@ -372,9 +375,13 @@ describe CanCan::ControllerResource do
   end
 
   it "should load the model using a custom namespaced class" do
-    project = Sub::Project.create!
+    module SomeEngine
+      class Project < ::Project; end
+    end
+    project = SomeEngine::Project.create!
+
     @params.merge!(:action => "show", :id => project.id)
-    resource = CanCan::ControllerResource.new(@controller, :class => ::Sub::Project)
+    resource = CanCan::ControllerResource.new(@controller, :class => SomeEngine::Project)
     resource.load_resource
     expect(@controller.instance_variable_get(:@project)).to eq(project)
   end
