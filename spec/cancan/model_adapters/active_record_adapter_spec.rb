@@ -37,7 +37,7 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
     before(:each) do
       Article.delete_all
       Comment.delete_all
-      (@ability = double).extend(CanCan::Ability)
+      (@ability = double('ability')).extend(CanCan::Ability)
       @article_table = Article.table_name
       @comment_table = Comment.table_name
     end
@@ -249,7 +249,6 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
     end
 
     it "restricts articles given a MetaWhere condition" do
-      pending
       @ability.can :read, Article, :priority.lt => 2
       article1 = Article.create!(:priority => 1)
       article2 = Article.create!(:priority => 3)
@@ -259,17 +258,16 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
     end
 
     it "merges MetaWhere and non-MetaWhere conditions" do
-      pending
-      @ability.can :read, :articles, :priority.lt => 2
+      @ability.can :read, Article, :priority.lt => 2
+      @ability.can :read, Article, :priority => '1'
       article1 = Article.create!(:priority => 1)
       article2 = Article.create!(:priority => 3)
-      expect(Article.accessible_by(@ability)).to eq([article1])
+      expect(Article.accessible_by(@ability).to_a).to eq([article1])
       expect(@ability).to be_able_to(:read, article1)
       expect(@ability).to_not be_able_to(:read, article2)
     end
 
     it "matches any MetaWhere condition" do
-      pending
       adapter = CanCan::ModelAdapters::ActiveRecordAdapter
       article1 = Article.new(:priority => 1, :name => "Hello World")
       expect(adapter.matches_condition?(article1, :priority.eq, 1)).to be_true
@@ -299,9 +297,8 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
       expect(adapter.matches_condition?(article1, :name.like, "%helo%")).to be_false
       expect(adapter.matches_condition?(article1, :name.like, "hello")).to be_false
       expect(adapter.matches_condition?(article1, :name.like, "hello.world")).to be_false
-      # For some reason this is reporting "The not_matches MetaWhere condition is not supported."
-      # expect(adapter.matches_condition?(article1, :name.nlike, "%helo%")).to be_true
-      # expect(adapter.matches_condition?(article1, :name.nlike, "%ello worl%")).to be_false
+      expect(adapter.matches_condition?(article1, :name.nlike, "%helo%")).to be_true
+      expect(adapter.matches_condition?(article1, :name.nlike, "%ello worl%")).to be_false
     end
   end
 end

@@ -3,6 +3,7 @@ require 'bundler/setup'
 
 require "sqlite3"
 require "active_record"
+require "squeel"
 
 case ENV["MODEL_ADAPTER"]
 when "data_mapper"
@@ -27,6 +28,13 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+end
+
+Squeel.configure do |config|
+  config.load_core_extensions :symbol
+  config.alias_predicate :ne, :not_eq
+  config.alias_predicate :nin, :not_in
+  config.alias_predicate :nlike, :not_like
 end
 
 class Ability
