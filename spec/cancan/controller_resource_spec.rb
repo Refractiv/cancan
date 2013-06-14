@@ -93,7 +93,7 @@ describe CanCan::ControllerResource do
 
   it "should build a new resource for namespaced controller and namespaced model with hash if params[:id] is not specified" do
     @params.merge!(:controller => "Admin::SubProjectsController", :action => "create", 'sub_project' => {:name => "foobar"})
-    resource = CanCan::ControllerResource.new(@controller, :class => Project)
+    resource = CanCan::ControllerResource.new(@controller, :class => ::Sub::Project)
     resource.load_resource
     @controller.instance_variable_get(:@sub_project).name.should == "foobar"
   end
@@ -107,7 +107,7 @@ describe CanCan::ControllerResource do
   end
 
   it "should override initial attributes with params" do
-    @params.merge!(:action => "new", :project => {:name => "from params"})
+    @params.merge!(:action => "create", :project => {:name => "from params"})
     @ability.can(:create, Project, :name => "from conditions")
     resource = CanCan::ControllerResource.new(@controller)
     resource.load_resource
@@ -487,5 +487,37 @@ describe CanCan::ControllerResource do
     resource = CanCan::ControllerResource.new(@controller)
     lambda { resource.load_and_authorize_resource }.should_not raise_error
     @controller.instance_variable_get(:@project).should be_nil
+  end
+
+  it "should assign parameters correctly if strong_parameters are used" do
+    class ActionController
+      class Parameters < HashWithIndifferentAccess
+      end
+    end
+
+    @params.merge!(:action => "create")
+    @controller.class.send(:define_method, :project_params) do { :name => 'foobar'} end
+    CanCan::ControllerResource.new(@controller).load_resource
+    @controller.instance_variable_get(:@project).name.should == "foobar"
+
+    class ActionController
+     remove_const :Parameters
+    end
+  end
+
+  it "should assign parameters correctly if strong_parameters are used and a custom params method is used" do
+    class ActionController
+      class Parameters < HashWithIndifferentAccess
+      end
+    end
+
+    @params.merge!(:action => "create")
+    @controller.class.send(:define_method, :project_parameters) do { :name => 'foobar'} end
+    CanCan::ControllerResource.new(@controller, :params => :project_parameters).load_resource
+    @controller.instance_variable_get(:@project).name.should == "foobar"
+
+    class ActionController
+     remove_const :Parameters
+    end
   end
 end

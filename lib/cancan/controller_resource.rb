@@ -213,13 +213,23 @@ module CanCan
       @name || name_from_controller
     end
 
-    def resource_params
-      if @options[:class]
-        params_key = extract_key(@options[:class])
-        return @params[params_key] if @params[params_key]
-      end
+    def strong_parameters?
+      klass = ActionController.const_get 'Parameters'
+      return klass.is_a?(Class)
+    rescue
+      return false
+    end
 
-      resource_params_by_namespaced_name
+    def resource_params
+      if [:create, :update].member? @params[:action].to_sym
+        param_name = (@options[:class] || namespaced_name).to_s.underscore.gsub('/', '_')
+        if strong_parameters? || @options[:params]
+          params_method = (@options[:params] == true || ! @options[:params]) ?
+          "#{param_name}_params" : @options[:params]
+          return @controller.send params_method if @controller.send :respond_to?, params_method
+        end
+        @params[param_name]
+      end
     end
 
     def resource_params_by_namespaced_name
