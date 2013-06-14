@@ -226,7 +226,7 @@ module CanCan
         if strong_parameters? || @options[:params]
           params_method = (@options[:params] == true || ! @options[:params]) ?
           "#{param_name}_params" : @options[:params]
-          return @controller.send params_method if @controller.send :respond_to?, params_method
+          return @controller.send params_method if @controller.send :respond_to?, params_method, true
         end
         @params[param_name]
       end
