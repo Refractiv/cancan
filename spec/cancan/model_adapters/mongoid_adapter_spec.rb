@@ -3,16 +3,23 @@ if ENV["MODEL_ADAPTER"] == "mongoid"
 
   class MongoidCategory
     include Mongoid::Document
-    references_many :mongoid_projects
+    has_many :mongoid_projects
   end
 
   class MongoidProject
     include Mongoid::Document
-    referenced_in :mongoid_category
+    belongs_to :mongoid_category
+    field :title, :type => String
+    field :age, :type => Integer
+    field :titles, :type => Array
+    field :foo, :type => Integer
+    field :bar, :type => Integer
+    field :baz, :type => Hash
+    field :numbers, :type => Array
   end
 
   Mongoid.configure do |config|
-    config.master = Mongo::Connection.new('127.0.0.1', 27017).db("cancan_mongoid_spec")
+    config.connect_to("cancan_mongoid_spec")
   end
 
   describe CanCan::ModelAdapters::MongoidAdapter do
@@ -22,9 +29,7 @@ if ENV["MODEL_ADAPTER"] == "mongoid"
       end
 
       after(:each) do
-        Mongoid.master.collections.select do |collection|
-          collection.name !~ /system/
-        end.each(&:drop)
+        Mongoid::Config.purge!
       end
 
       it "is for only Mongoid classes" do
@@ -189,8 +194,8 @@ if ENV["MODEL_ADAPTER"] == "mongoid"
       end
 
       it "calls where with matching ability conditions" do
-        obj = MongoidProject.create(:foo => {:bar => 1})
-        @ability.can :read, MongoidProject, :foo => {:bar => 1}
+        obj = MongoidProject.create(:baz => {:bar => 1})
+        @ability.can :read, MongoidProject, :baz => {:bar => 1}
         expect(MongoidProject.accessible_by(@ability, :read).entries.first).to eq(obj)
       end
 
