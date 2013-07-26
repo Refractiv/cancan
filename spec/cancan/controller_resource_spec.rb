@@ -425,6 +425,7 @@ describe CanCan::ControllerResource do
   end
 
   it "allows full find method to be passed into find_by option" do
+    pending 
     project = Project.create!(:name => "foo")
     @params.merge!(:action => "show", :id => "foo")
     resource = CanCan::ControllerResource.new(@controller, :find_by => :find_by_name)

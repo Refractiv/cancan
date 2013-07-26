@@ -151,6 +151,7 @@ if ENV["MODEL_ADAPTER"] == "mongoid"
         end
 
         it "handles :field.size" do
+          pending "Ruby now hash Symbol.size method"
           obj = MongoidProject.create(:titles => ['Palatin', 'Margrave'])
           @ability.can :read, MongoidProject, :titles.size => 2
           expect(@ability.can?(:read, obj)).to eq(true)
