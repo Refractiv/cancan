@@ -12,18 +12,9 @@ This is a fork of {cancan}[http://github.com/ryanb/cancan] and should be conside
 
 == Installation
 
-In <b>Rails 3</b>, add this to your Gemfile and run the +bundle+ command.
+In <b>Rails 4</b>, add this to your Gemfile and run the +bundle+ command.
 
   gem "cancan"
-
-In <b>Rails 2</b>, add this to your environment.rb file.
-
-  config.gem "cancan"
-
-Alternatively, you can install it as a plugin.
-
-  rails plugin install git://github.com/ryanb/cancan.git
-
 
 == Getting Started
 
@@ -32,18 +23,9 @@ CanCan expects a +current_user+ method to exist in the controller. First, set up
 
 === 1. Define Abilities
 
-User permissions are defined in an +Ability+ class. CanCan 1.5 includes a Rails 3 generator for creating this class.
+User permissions are defined in an +Ability+ class. CanCan 1.5 includes a generator for creating this class.
 
   rails g cancan:ability
-
-In Rails 2.3, just add a new class in `app/models/ability.rb` with the following contents:
-
-  class Ability
-    include CanCan::Ability
-
-    def initialize(user)
-    end
-  end
 
 See {Defining Abilities}[https://github.com/ryanb/cancan/wiki/defining-abilities] for details.
 
