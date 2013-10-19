@@ -1,9 +1,7 @@
 rvm:
-  - 1.8.7
-  - 1.9.3
   - 2.0.0
-  - ree
+  - rbx
 notifications:
   recipients:
-    - graf.otodrakula@gmail.com
-    - ryan@railscasts.com
+    - clemensgru@gmail.com
+
