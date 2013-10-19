@@ -1,11 +1,13 @@
 = CanCan
-{<img src="https://fury-badge.herokuapp.com/rb/cancan.png" alt="Gem Version" />}[http://badge.fury.io/rb/cancan] 
-{<img src="https://secure.travis-ci.org/ryanb/cancan.png?branch=master" />}[http://travis-ci.org/ryanb/cancan] 
-{<img src="https://codeclimate.com/github/ryanb/cancan.png" />}[https://codeclimate.com/github/ryanb/cancan]
+{<img src="https://secure.travis-ci.org/clemensg/cancan.png?branch=master" />}[http://travis-ci.org/clemensg/cancan] 
 
 Wiki[https://github.com/ryanb/cancan/wiki] | RDocs[http://rdoc.info/projects/ryanb/cancan] | Screencast[http://railscasts.com/episodes/192-authorization-with-cancan]
 
 CanCan is an authorization library for Ruby on Rails which restricts what resources a given user is allowed to access. All permissions are defined in a single location (the +Ability+ class) and not duplicated across controllers, views, and database queries.
+
+== Warning
+
+This is a fork of {cancan}[http://github.com/ryanb/cancan] and should be considered experimental until further notice.
 
 
 == Installation
