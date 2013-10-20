@@ -1,8 +1,9 @@
 rvm:
-  - ruby-2.0.0
-  - ruby-2.1.0
+  - 2.0.0
   - rbx-2.1.1
 notifications:
   recipients:
     - clemensgru@gmail.com
-
+branches:
+  only:
+    - master
