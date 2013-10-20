@@ -1,57 +1,43 @@
 if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
   require "spec_helper"
 
-  ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+  class Category
+    has_many :articles
+  end
+
+  class Article < ActiveRecord::Base
+    connection.create_table(table_name) do |t|
+      t.integer :category_id
+      t.string :name
+      t.boolean :published
+      t.boolean :secret
+      t.integer :priority
+      t.integer :user_id
+    end
+    belongs_to :category
+    has_many :comments
+    belongs_to :user
+  end
+
+  class Comment < ActiveRecord::Base
+    connection.create_table(table_name) do |t|
+      t.integer :article_id
+      t.boolean :spam
+    end
+    belongs_to :article
+  end
+
+  class User < ActiveRecord::Base
+    connection.create_table(table_name) do |t|
+    end
+    has_many :articles
+  end
 
   describe CanCan::ModelAdapters::ActiveRecordAdapter do
-    with_model :category do
-      table do |t|
-        t.boolean "visible"
-      end
-      model do
-        has_many :articles
-      end
-    end
-
-    with_model :article do
-      table do |t|
-        t.string  "name"
-        t.boolean "published"
-        t.boolean "secret"
-        t.integer "priority"
-        t.integer "category_id"
-        t.integer "user_id"
-      end
-      model do
-        belongs_to :category
-        has_many :comments
-        belongs_to :user
-      end
-    end
-
-    with_model :comment do
-      table do |t|
-        t.boolean "spam"
-        t.integer "article_id"
-      end
-      model do
-        belongs_to :article
-      end
-    end
-
-    with_model :user do
-      table do |t|
-
-      end
-      model do
-        has_many :articles
-      end
-    end
-
     before(:each) do
       Article.delete_all
       Comment.delete_all
-      (@ability = double).extend(CanCan::Ability)
+      (@ability = double('ability')).extend(CanCan::Ability)
       @article_table = Article.table_name
       @comment_table = Comment.table_name
     end
@@ -273,10 +259,10 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
 
     it "merges MetaWhere and non-MetaWhere conditions" do
       @ability.can :read, Article, :priority.lt => 2
-      @ability.can :read, Article, :priority => 1
+      @ability.can :read, Article, :priority => '1'
       article1 = Article.create!(:priority => 1)
       article2 = Article.create!(:priority => 3)
-      expect(Article.accessible_by(@ability)).to eq([article1])
+      expect(Article.accessible_by(@ability).to_a).to eq([article1])
       expect(@ability).to be_able_to(:read, article1)
       expect(@ability).to_not be_able_to(:read, article2)
     end
@@ -311,9 +297,8 @@ if ENV["MODEL_ADAPTER"].nil? || ENV["MODEL_ADAPTER"] == "active_record"
       expect(adapter.matches_condition?(article1, :name.like, "%helo%")).to be_false
       expect(adapter.matches_condition?(article1, :name.like, "hello")).to be_false
       expect(adapter.matches_condition?(article1, :name.like, "hello.world")).to be_false
-      # For some reason this is reporting "The not_matches MetaWhere condition is not supported."
-      # expect(adapter.matches_condition?(article1, :name.nlike, "%helo%")).to be_true
-      # expect(adapter.matches_condition?(article1, :name.nlike, "%ello worl%")).to be_false
+      expect(adapter.matches_condition?(article1, :name.nlike, "%helo%")).to be_true
+      expect(adapter.matches_condition?(article1, :name.nlike, "%ello worl%")).to be_false
     end
   end
 end

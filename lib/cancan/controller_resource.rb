@@ -215,21 +215,22 @@ module CanCan
       @name || name_from_controller
     end
 
+    def strong_parameters?
+      klass = ActionController.const_get 'Parameters'
+      return klass.is_a?(Class)
+    rescue
+      return false
+    end
+
     def resource_params
-      resource_key = if @options[:class]
-        params_key = extract_key(@options[:class])
-        @params[params_key]
-      else
-        resource_params_by_namespaced_name       
-      end
-      return nil unless @params[resource_key]
-      param_method_name = "#{resource_key}_params"
-      if @controller.respond_to?(param_method_name, true)
-        @controller.send(param_method_name)
-      elsif @controller.respond_to?(:permitted_params, true)
-        @controller.send(:permitted_params)[resource_key]
-      else
-        @params[resource_key]
+      if [:create, :update].member? @params[:action].to_sym
+        param_name = (@options[:class] || namespaced_name).to_s.underscore.gsub('/', '_')
+        if strong_parameters? || @options[:params]
+          params_method = (@options[:params] == true || ! @options[:params]) ?
+          "#{param_name}_params" : @options[:params]
+          return @controller.send params_method if @controller.send :respond_to?, params_method, true
+        end
+        @params[param_name]
       end
     end
 
