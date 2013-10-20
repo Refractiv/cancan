@@ -252,7 +252,7 @@ describe CanCan::ControllerResource do
 
   it "has the specified resource_class if Proc is passed to load_resource" do
     resource = CanCan::ControllerResource.new(@controller, :class => Proc.new { |controller| CanCan::ControllerResource })
-    resource.send(:resource_class).should == resource.class
+    expect(resource.send(:resource_class)).to eq(resource.class)
   end
 
   it "loads parent resource through proper id parameter" do

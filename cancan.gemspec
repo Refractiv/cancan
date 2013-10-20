@@ -20,8 +20,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "dm-migrations", "~> 1.2.0"
 
 #  s.add_development_dependency "mongoid", "~> 4.0.0"
-  s.add_development_dependency "bson_ext", "~> 1.6.2"
 
   s.rubyforge_project = s.name
-  s.required_rubygems_version = ">= 1.3.4"
+  s.required_rubygems_version = ">= 2.1.0"
 end

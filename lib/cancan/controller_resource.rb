@@ -12,7 +12,7 @@ module CanCan
     end
 
     def initialize(controller, *args)
-      @params_method = args.last[:attributes] if args.last.respond_to?(:[])
+      # @params_method = args.last[:attributes] if args.last.respond_to?(:[])
       @controller = controller
       @params = controller.params
       @options = args.extract_options!
